@@ -28,8 +28,24 @@ let weather = {
         document.querySelector(".humidity").innerText = "Humidity: " + humidity + "%";
         document.querySelector(".wind").innerText = "Wind speed: " + speed + " km/h";
         document.querySelector(".weather").classList.remove("loading");
-        document.body.style.backgroundImage = "url('https://source.unsplash.com/1600x900/?" + name + "')";
+        this.fetchBackgroundImage(name);
         this.clearError();
+    },
+    fetchBackgroundImage: function (city) {
+        const API_KEY = '44128486-e3759046dbe021255c4793144';
+        const url = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(city)}&image_type=photo&per_page=3`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.hits && data.hits.length > 0) {
+                    const imageUrl = data.hits[0].webformatURL;
+                    document.body.style.backgroundImage = `url(${imageUrl})`;
+                } else {
+                    console.error('No images found for the query:', city);
+                }
+            })
+            .catch(error => console.error('Error fetching the image:', error));
     },
     search: function () {
         this.fetchWeather(document.querySelector(".search-bar").value);
@@ -96,5 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         suggestionsList.style.display = 'block';
     }
-
 });
+
+
